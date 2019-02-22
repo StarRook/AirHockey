@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IceHockey</title>
+</head>
+<body>
+    <canvas id="canvas" style="border: 1px solid black;" width="1800" height="900"></canvas>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+      $(function () {
+
+        const socket = io();
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext("2d");
+
+        canvas.addEventListener('mousemove', (event) => {
+          socket.emit('move', [event.clientX, event.clientY]);
+        });
+
+        socket.on('update', (data) => {
+          console.log(data);
+
+          ctx.clearRect(0, 0, 1800, 900);
+
+          ctx.beginPath();
+          ctx.strokeStyle = '#9d0000';
+          ctx.moveTo(900, 0);
+          ctx.lineTo(900, 900);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.strokeStyle = '#00009d';
+          ctx.moveTo(550, 0);
+          ctx.lineTo(550, 900);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.strokeStyle = '#00009d';
+          ctx.moveTo(1250, 0);
+          ctx.lineTo(1250, 900);
+          ctx.stroke();
+
+          for (const player of data) {
+            if (player.no === 1) {
+              ctx.fillStyle = '#ad222d';
+            } else {
+              ctx.fillStyle = '#0c2984';
+            }
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, 35, 0, 2 * Math.PI);
+            ctx.closePath();
+            ctx.fill();
+          }
+        });
+
+      });
+    </script>
+</body>
+</html>
