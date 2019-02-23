@@ -112,11 +112,7 @@ io.on('connection', function(socket){
 
       }
 
-      // Calculate collision
-
       // Determine if goal
-
-      //
     }
     socket.emit('update', {
         players: players,
