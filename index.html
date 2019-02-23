@@ -11,6 +11,32 @@
     <script>
       $(function () {
 
+        const drawLinesToField = () => {
+          ctx.beginPath();
+          ctx.strokeStyle = '#9d0000';
+          ctx.moveTo(900, 0);
+          ctx.lineTo(900, 900);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.strokeStyle = '#9d0000';
+          ctx.arc(900, 450, 50, 0, 2 * Math.PI);
+          ctx.closePath();
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.strokeStyle = '#00009d';
+          ctx.moveTo(550, 0);
+          ctx.lineTo(550, 900);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.strokeStyle = '#00009d';
+          ctx.moveTo(1250, 0);
+          ctx.lineTo(1250, 900);
+          ctx.stroke();
+        };
+
         const socket = io();
 
         const canvas = document.getElementById('canvas');
@@ -25,23 +51,7 @@
 
           ctx.clearRect(0, 0, 1800, 900);
 
-          ctx.beginPath();
-          ctx.strokeStyle = '#9d0000';
-          ctx.moveTo(900, 0);
-          ctx.lineTo(900, 900);
-          ctx.stroke();
-
-          ctx.beginPath();
-          ctx.strokeStyle = '#00009d';
-          ctx.moveTo(550, 0);
-          ctx.lineTo(550, 900);
-          ctx.stroke();
-
-          ctx.beginPath();
-          ctx.strokeStyle = '#00009d';
-          ctx.moveTo(1250, 0);
-          ctx.lineTo(1250, 900);
-          ctx.stroke();
+          drawLinesToField();
 
           for (const player of data) {
             if (player.no === 1) {
@@ -55,7 +65,6 @@
             ctx.fill();
           }
         });
-
       });
     </script>
 </body>
