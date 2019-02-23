@@ -11,31 +11,46 @@
     <script>
       $(function () {
 
-        const drawLinesToField = () => {
-          ctx.beginPath();
-          ctx.strokeStyle = '#9d0000';
-          ctx.moveTo(900, 0);
-          ctx.lineTo(900, 900);
-          ctx.stroke();
+        /* FUNCTIONS START */
 
-          ctx.beginPath();
-          ctx.strokeStyle = '#9d0000';
-          ctx.arc(900, 450, 50, 0, 2 * Math.PI);
-          ctx.closePath();
-          ctx.stroke();
+        const drawScore = () => {
 
-          ctx.beginPath();
-          ctx.strokeStyle = '#00009d';
-          ctx.moveTo(550, 0);
-          ctx.lineTo(550, 900);
-          ctx.stroke();
-
-          ctx.beginPath();
-          ctx.strokeStyle = '#00009d';
-          ctx.moveTo(1250, 0);
-          ctx.lineTo(1250, 900);
-          ctx.stroke();
         };
+
+        const drawLine = (color, x1, y1, x2, y2) => {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        };
+
+        const drawArc = (color, x, y, r, fill) => {
+          ctx.beginPath();
+          if (fill) {
+            ctx.fillStyle = color;
+          } else {
+            ctx.strokeStyle = color;
+          }
+          ctx.arc(x, y, r, 0, 2 * Math.PI);
+          ctx.closePath();
+          if (fill) {
+            ctx.fill();
+          } else {
+            ctx.stroke();
+          }
+        };
+
+        const drawLinesToField = () => {
+
+          drawLine('#9d0000', 900, 0, 900, 900);
+          drawArc('#9d0000', 900, 450, 50, false);
+          drawLine('#00009d', 550, 0, 550, 900);
+          drawLine('#00009d', 1250, 0, 1250, 900);
+
+        };
+
+        /* FUNCTIONS END */
 
         const socket = io();
 
@@ -53,17 +68,21 @@
 
           drawLinesToField();
 
-          for (const player of data) {
+          for (const player of data.players) {
+
+            let fillStyle = '#0c2984';
+
             if (player.no === 1) {
-              ctx.fillStyle = '#ad222d';
-            } else {
-              ctx.fillStyle = '#0c2984';
+              fillStyle = '#ad222d';
             }
-            ctx.beginPath();
-            ctx.arc(player.x, player.y, 35, 0, 2 * Math.PI);
-            ctx.closePath();
-            ctx.fill();
+
+            drawArc(fillStyle, player.x, player.y, 35, true);
           }
+
+          const puck = data.puck;
+
+          drawArc(puck.color, puck.x, puck.y, puck.r, true);
+
         });
       });
     </script>

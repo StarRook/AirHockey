@@ -6,6 +6,21 @@ const port = 3000;
 
 /* GAME SETTINGS */
 let gameOver = false;
+
+let puck = {
+  x: 900,
+  y: 450,
+  r: 12,
+  color: '#000000',
+  speedX: 2,
+  speedY: 1,
+};
+
+let score = {
+  player1: 0,
+  player2: 0,
+};
+
 let players = [];
 
 // Tämä firee aina kun uusi socket joinaa
@@ -68,13 +83,47 @@ io.on('connection', function(socket){
   setInterval(() => {
 
     if (players.length === 2) {
+
+      // Move puck
+      puck.x += puck.speedX;
+      puck.y += puck.speedY;
+
+      // Check puck collision to walls
+
+      if (puck.x >= 1800 - puck.r || puck.x <= puck.r) {
+        puck.speedX = puck.speedX * -1;
+      }
+      if (puck.y >= 900 - puck.r || puck.y <= puck.r) {
+        puck.speedY = puck.speedY * -1;
+      }
+
+      // Check puck collision to players
+      for (const player of players) {
+        const dist = Math.sqrt(Math.pow((puck.x - player.x), 2) + Math.pow((puck.y - player.y), 2));
+
+        if (dist < puck.r + 25) {
+
+          const collisionPointX = ((player.x * puck.r) + (puck.x * 25)) / (25 + puck.r);
+          const collisionPointY = ((player.y * puck.r) + (puck.y * 25)) / (25 + puck.r);
+
+          console.log('X:' + collisionPointX + ', Y:' + collisionPointY);
+
+        }
+
+      }
+
       // Calculate collision
 
       // Determine if goal
 
       //
     }
-    socket.emit('update', players);
+    socket.emit('update', {
+        players: players,
+        puck: puck,
+        score: score,
+      }
+    );
   }, (17));
 
 
