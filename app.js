@@ -106,7 +106,7 @@ io.on('connection', function(socket){
   });
 
 
-  if (players.length === 1) {
+  // if (players.length === 1) {
 
     // Dumb gameloop joka päivittää about 60 kertaa sekunissa. Tähän kaikki pelin logiikka.
     setInterval(() => {
@@ -203,7 +203,7 @@ io.on('connection', function(socket){
         }
       );
     }, (17));
-  }
+  // }
 });
 
 // Kun client pyytää get metodilla "/" urlia lähetä sille index.html
