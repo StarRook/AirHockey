@@ -56,10 +56,13 @@ io.on('connection', function(socket){
       velY: 0,
       mass: 20,
     });
+  } else {
+    socket.close();
   }
 
   // Kun server saa "disconnect" kutsun clientiltä poista pelaaja players arraysta
   socket.on('disconnect', () => {
+    console.log('Disconnected: ' + socket.id);
     for (let i = 0; i < players.length; i++) {
       if (players[i].id === socket.id) {
         players.splice(i, 1);

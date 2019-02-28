@@ -73,10 +73,13 @@ $(function () {
     socket.emit('move', [event.clientX, event.clientY]);
   });
 
+  // Draw lines
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+  drawLinesToField();
+
   socket.on('update', (data) => {
 
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
     drawLinesToField();
 
     for (const player of data.players) {
