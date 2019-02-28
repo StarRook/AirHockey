@@ -13,7 +13,7 @@ let puck = {
   r: 12,
   color: '#000000',
   speedX: 2,
-  speedY: 1,
+  speedY: 1
 };
 
 let score = {
@@ -40,6 +40,10 @@ io.on('connection', function(socket){
       x: 0,
       y: 0,
       no: playerNo,
+      lastPosX: 0,
+      lastPosY: 0,
+      velX: 0,
+      velY: 0,
     });
   }
 
@@ -56,6 +60,10 @@ io.on('connection', function(socket){
   socket.on('move', (coords) => {
     for (let player of players) {
       if (player.id === socket.id) {
+
+        // Tallenna lastPosX ja lastPosY
+        player.lastPosX = player.x;
+        player.lastPosY = player.y;
 
         // Jos pelaaja 1 niin rajoita X - suunnan liikkuminen 935px:iin.
         if (player.no === 1) {
@@ -74,6 +82,11 @@ io.on('connection', function(socket){
         }
         // Aseta uusi y-koordinaatti pelaajalle
         player.y = coords[1];
+
+        // Laske velX ja velY
+        player.velX = player.x - player.lastPosX;
+        player.velY = player.y - player.lastPosY;
+
       }
     }
   });
@@ -102,11 +115,6 @@ io.on('connection', function(socket){
         const dist = Math.sqrt(Math.pow((puck.x - player.x), 2) + Math.pow((puck.y - player.y), 2));
 
         if (dist < puck.r + 25) {
-
-          const collisionPointX = ((player.x * puck.r) + (puck.x * 25)) / (25 + puck.r);
-          const collisionPointY = ((player.y * puck.r) + (puck.y * 25)) / (25 + puck.r);
-
-          console.log('X:' + collisionPointX + ', Y:' + collisionPointY);
 
         }
 
