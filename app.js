@@ -34,6 +34,8 @@ let players = [];
 // Tämä firee aina kun uusi socket joinaa
 io.on('connection', function(socket){
 
+  console.log('New connection: ' + socket.id);
+
   // Tarkista onko pelaajia jo 2. Jos ei ole anna lisätä uusi pelaaja
   if (players.length < 3) {
 
@@ -125,8 +127,8 @@ io.on('connection', function(socket){
           puck.speedX = puck.speedX + (puck.speedX / 50);
         }
 
-        console.log(puck.speedX);
-        console.log(puck.speedY);
+        // console.log(puck.speedX);
+        // console.log(puck.speedY);
 
         // Katso jos maali
         if (puck.x <= puck.r && (puck.y >= 350 && puck.y <= 550)) {
