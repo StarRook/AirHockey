@@ -101,103 +101,104 @@ io.on('connection', function(socket){
   });
 
 
-  // Dumb gameloop joka päivittää about 60 kertaa sekunissa. Tähän kaikki pelin logiikka.
-  setInterval(() => {
+  if (players.length === 1) {
 
-    // TODO:: CHANGE THIS TO === WHEN READY
-    if (players.length <= 2) {
+    // Dumb gameloop joka päivittää about 60 kertaa sekunissa. Tähän kaikki pelin logiikka.
+    setInterval(() => {
 
-      // Move puck
-      puck.x += puck.speedX;
-      puck.y += puck.speedY;
+      // TODO:: CHANGE THIS TO === WHEN READY
+      if (players.length <= 2) {
 
-      if (puck.speedY > 0) {
-        puck.speedY = puck.speedY - (puck.speedY / 50);
-      } else if (puck.speedY < 0) {
-        puck.speedY = puck.speedY + (puck.speedY / 50);
-      }
+        // Move puck
+        puck.x += puck.speedX;
+        puck.y += puck.speedY;
 
-      if (puck.speedX > 0) {
-        puck.speedX = puck.speedX - (puck.speedX / 50);
-      } else if (puck.speedX < 0) {
-        puck.speedX = puck.speedX + (puck.speedX / 50);
-      }
-
-      console.log(puck.speedX);
-      console.log(puck.speedY);
-
-      // Katso jos maali
-      if (puck.x <= puck.r && (puck.y >= 350 && puck.y <= 550)) {
-        // Maali pelaaja 1:lle
-        console.log('GOAL');
-        score.player1++;
-      } else if (puck.x >= 1800 - puck.r && (puck.y >= 350 && puck.y <= 550)) {
-        // Maali pelaaja 2:lle
-        console.log('GOAL');
-        score.player2++;
-      }
-
-      // Check puck collision to walls
-
-      if (puck.x >= 1800 - puck.r) {
-        puck.x = 1800 - puck.r;
-        puck.speedX = puck.speedX * -1;
-      } else if (puck.x <= puck.r) {
-        puck.x = puck.r * 2;
-        puck.speedX = puck.speedX * -1;
-      }
-      if (puck.y >= 900 - puck.r) {
-        puck.y = 900 - puck.r;
-        puck.speedY = puck.speedY * -1;
-      } else if (puck.y <= puck.r) {
-        puck.y = puck.r * 2;
-        puck.speedY = puck.speedY * -1;
-      }
-
-      // Check puck collision to players
-      for (const player of players) {
-        const dist = Math.sqrt(Math.pow((puck.x - player.x), 2) + Math.pow((puck.y - player.y), 2));
-
-        if (dist < puck.r + 35) {
-          console.log('COLLISION');
-
-          // Tallenna uudet nopeudet muuttujiin
-          const newSpeedX = (puck.speedX * (puck.mass - player.mass) + (2 * player.mass * player.velX)) / (puck.mass + player.mass);
-          const newSpeedY = (puck.speedY * (puck.mass - player.mass) + (2 * player.mass * player.velY)) / (puck.mass + player.mass);
-
-          // Siirrä puckin x,y koordinaatteja heti uusien nopeuksien verran ettei puck jää pelaajaan jumiin
-          puck.x = puck.x += newSpeedX;
-          puck.y = puck.y += newSpeedY;
-
-          // Muuta kiekon nopeudet ottaen kiekon maxSpeed huomioon
-          if (Math.abs(newSpeedX) > puck.maxSpeed) {
-            puck.speedX = puck.maxSpeed;
-          } else {
-            puck.speedX = newSpeedX;
-          }
-
-          if (Math.abs(newSpeedY) > puck.maxSpeed) {
-            puck.speedY = puck.maxSpeed;
-          } else {
-            puck.speedY = newSpeedY;
-          }
-
-          console.log('Puck speed x: ' + puck.speedX);
-          console.log('Puck speed y: ' + puck.speedY);
-
+        if (puck.speedY > 0) {
+          puck.speedY = puck.speedY - (puck.speedY / 50);
+        } else if (puck.speedY < 0) {
+          puck.speedY = puck.speedY + (puck.speedY / 50);
         }
 
-      }
-    }
-    socket.emit('update', {
-        players: players,
-        puck: puck,
-        score: score,
-      }
-    );
-  }, (17));
+        if (puck.speedX > 0) {
+          puck.speedX = puck.speedX - (puck.speedX / 50);
+        } else if (puck.speedX < 0) {
+          puck.speedX = puck.speedX + (puck.speedX / 50);
+        }
 
+        console.log(puck.speedX);
+        console.log(puck.speedY);
 
+        // Katso jos maali
+        if (puck.x <= puck.r && (puck.y >= 350 && puck.y <= 550)) {
+          // Maali pelaaja 1:lle
+          console.log('GOAL');
+          score.player1++;
+        } else if (puck.x >= 1800 - puck.r && (puck.y >= 350 && puck.y <= 550)) {
+          // Maali pelaaja 2:lle
+          console.log('GOAL');
+          score.player2++;
+        }
+
+        // Check puck collision to walls
+
+        if (puck.x >= 1800 - puck.r) {
+          puck.x = 1800 - puck.r;
+          puck.speedX = puck.speedX * -1;
+        } else if (puck.x <= puck.r) {
+          puck.x = puck.r * 2;
+          puck.speedX = puck.speedX * -1;
+        }
+        if (puck.y >= 900 - puck.r) {
+          puck.y = 900 - puck.r;
+          puck.speedY = puck.speedY * -1;
+        } else if (puck.y <= puck.r) {
+          puck.y = puck.r * 2;
+          puck.speedY = puck.speedY * -1;
+        }
+
+        // Check puck collision to players
+        for (const player of players) {
+          const dist = Math.sqrt(Math.pow((puck.x - player.x), 2) + Math.pow((puck.y - player.y), 2));
+
+          if (dist < puck.r + 35) {
+            console.log('COLLISION');
+
+            // Tallenna uudet nopeudet muuttujiin
+            const newSpeedX = (puck.speedX * (puck.mass - player.mass) + (2 * player.mass * player.velX)) / (puck.mass + player.mass);
+            const newSpeedY = (puck.speedY * (puck.mass - player.mass) + (2 * player.mass * player.velY)) / (puck.mass + player.mass);
+
+            // Siirrä puckin x,y koordinaatteja heti uusien nopeuksien verran ettei puck jää pelaajaan jumiin
+            puck.x = puck.x += newSpeedX;
+            puck.y = puck.y += newSpeedY;
+
+            // Muuta kiekon nopeudet ottaen kiekon maxSpeed huomioon
+            if (Math.abs(newSpeedX) > puck.maxSpeed) {
+              puck.speedX = puck.maxSpeed;
+            } else {
+              puck.speedX = newSpeedX;
+            }
+
+            if (Math.abs(newSpeedY) > puck.maxSpeed) {
+              puck.speedY = puck.maxSpeed;
+            } else {
+              puck.speedY = newSpeedY;
+            }
+
+            console.log('Puck speed x: ' + puck.speedX);
+            console.log('Puck speed y: ' + puck.speedY);
+
+          }
+
+        }
+      }
+      socket.emit('update', {
+          players: players,
+          puck: puck,
+          score: score,
+        }
+      );
+    }, (17));
+  }
 });
 
 // Kun client pyytää get metodilla "/" urlia lähetä sille index.html

@@ -2,14 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a2a04513-ae15-4632-8d53-32dc2354b05f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/public/airhockey/js/game.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/airhockey.ejs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/partials/footer.ejs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/partials/header.ejs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/airhockey/css/main.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/views/index.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/views/index.ejs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -53,7 +47,7 @@
           <entry key="css" value="31" />
           <entry key="ejs" value="190" />
           <entry key="html" value="3968" />
-          <entry key="js" value="5288" />
+          <entry key="js" value="5317" />
           <entry key="json" value="21" />
           <entry key="md" value="272" />
         </counts>
@@ -63,7 +57,7 @@
           <entry key="CSS" value="31" />
           <entry key="HTML" value="4158" />
           <entry key="JSON" value="21" />
-          <entry key="JavaScript" value="5288" />
+          <entry key="JavaScript" value="5317" />
           <entry key="Markdown" value="272" />
         </counts>
       </usages-collector>
@@ -74,8 +68,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="114" column="35" selection-start-line="114" selection-start-column="35" selection-end-line="114" selection-end-column="35" />
+            <state relative-caret-position="400">
+              <caret line="112" column="30" lean-forward="true" selection-start-line="112" selection-start-column="30" selection-end-line="112" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -317,10 +311,11 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="37243000" />
+    <option name="totallyTimeSpent" value="37300000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25799572" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -366,9 +361,7 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/game.js" />
-    <entry file="file://$PROJECT_DIR$/views/index.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/views/index.html" />
     <entry file="file://$PROJECT_DIR$/public/airhockey/js/game.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -428,8 +421,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="114" column="35" selection-start-line="114" selection-start-column="35" selection-end-line="114" selection-end-column="35" />
+        <state relative-caret-position="400">
+          <caret line="112" column="30" lean-forward="true" selection-start-line="112" selection-start-column="30" selection-end-line="112" selection-end-column="30" />
         </state>
       </provider>
     </entry>
