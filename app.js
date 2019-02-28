@@ -13,7 +13,9 @@ let puck = {
   r: 12,
   color: '#000000',
   speedX: 2,
-  speedY: 1
+  speedY: 1,
+  mass: 10,
+  maxSpeed: 1000,
 };
 
 let score = {
@@ -44,6 +46,7 @@ io.on('connection', function(socket){
       lastPosY: 0,
       velX: 0,
       velY: 0,
+      mass: 20,
     });
   }
 
@@ -95,7 +98,8 @@ io.on('connection', function(socket){
   // Dumb gameloop joka päivittää about 60 kertaa sekunissa. Tähän kaikki pelin logiikka.
   setInterval(() => {
 
-    if (players.length === 2) {
+    // TODO:: CHANGE THIS TO === WHEN READY
+    if (players.length <= 2) {
 
       // Move puck
       puck.x += puck.speedX;
@@ -115,6 +119,31 @@ io.on('connection', function(socket){
         const dist = Math.sqrt(Math.pow((puck.x - player.x), 2) + Math.pow((puck.y - player.y), 2));
 
         if (dist < puck.r + 25) {
+          console.log('COLLISION');
+
+          // Tallenna uudet nopeudet muuttujiin
+          const newSpeedX = (puck.speedX * (puck.mass - player.mass) + (2 * player.mass * player.velX)) / (puck.mass + player.mass);
+          const newSpeedY = (puck.speedY * (puck.mass - player.mass) + (2 * player.mass * player.velY)) / (puck.mass + player.mass);
+
+          // Siirrä puckin x,y koordinaatteja heti uusien nopeuksien verran ettei puck jää pelaajaan jumiin
+          puck.x = puck.x += newSpeedX;
+          puck.y = puck.y += newSpeedY;
+
+          // Muuta kiekon nopeudet ottaen kiekon maxSpeed huomioon
+          if (Math.abs(newSpeedX) > puck.maxSpeed) {
+            puck.speedX = puck.maxSpeed;
+          } else {
+            puck.speedX = newSpeedX;
+          }
+
+          if (Math.abs(newSpeedY) > puck.maxSpeed) {
+            puck.speedY = puck.maxSpeed;
+          } else {
+            puck.speedY = newSpeedY;
+          }
+
+          console.log('Puck speed x: ' + puck.speedX);
+          console.log('Puck speed y: ' + puck.speedY);
 
         }
 
