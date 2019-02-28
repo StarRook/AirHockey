@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a2a04513-ae15-4632-8d53-32dc2354b05f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
-    </list>
+    <list default="true" id="a2a04513-ae15-4632-8d53-32dc2354b05f" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +66,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
+            <state relative-caret-position="1717">
               <caret line="205" column="6" lean-forward="true" selection-start-line="205" selection-start-column="6" selection-end-line="205" selection-end-column="6" />
             </state>
           </provider>
@@ -250,16 +248,15 @@
       <workItem from="1551300530752" duration="6771000" />
       <workItem from="1551351546992" duration="13166000" />
       <workItem from="1551384402322" duration="187000" />
-      <workItem from="1551384605999" duration="2043000" />
+      <workItem from="1551384605999" duration="3155000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="40039000" />
+    <option name="totallyTimeSpent" value="41151000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26332623" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -364,7 +361,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
+        <state relative-caret-position="1717">
           <caret line="205" column="6" lean-forward="true" selection-start-line="205" selection-start-column="6" selection-end-line="205" selection-end-column="6" />
         </state>
       </provider>
