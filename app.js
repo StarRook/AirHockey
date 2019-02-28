@@ -1,8 +1,19 @@
-const app = require('express')();
+const express = require('express');
+const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const path = require('path');
+const index = require('./routes/index');
+const ejs = require('ejs');
 
 const port = 3000;
+
+// View Engine Setup for EJS
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/', index);
 
 /* GAME SETTINGS */
 let gameOver = false;
@@ -12,10 +23,10 @@ let puck = {
   y: 450,
   r: 12,
   color: '#000000',
-  speedX: 2,
-  speedY: 1,
+  speedX: Math.round(Math.random() * 10 + 1),
+  speedY: Math.round(Math.random() * 10 + 1),
   mass: 10,
-  maxSpeed: 1000,
+  maxSpeed: 100,
 };
 
 let score = {
@@ -105,12 +116,31 @@ io.on('connection', function(socket){
       puck.x += puck.speedX;
       puck.y += puck.speedY;
 
+      // Katso jos maali
+      if (puck.x <= puck.r && (puck.y >= 350 && puck.y <= 550)) {
+        // Maali pelaaja 1:lle
+        console.log('GOAL');
+        score.player1++;
+      } else if (puck.x >= 1800 - puck.r && (puck.y >= 350 && puck.y <= 550)) {
+        // Maali pelaaja 2:lle
+        console.log('GOAL');
+        score.player2++;
+      }
+
       // Check puck collision to walls
 
-      if (puck.x >= 1800 - puck.r || puck.x <= puck.r) {
+      if (puck.x >= 1800 - puck.r) {
+        puck.x = 1800 - puck.r;
+        puck.speedX = puck.speedX * -1;
+      } else if (puck.x <= puck.r) {
+        puck.x = puck.r * 2;
         puck.speedX = puck.speedX * -1;
       }
-      if (puck.y >= 900 - puck.r || puck.y <= puck.r) {
+      if (puck.y >= 900 - puck.r) {
+        puck.y = 900 - puck.r;
+        puck.speedY = puck.speedY * -1;
+      } else if (puck.y <= puck.r) {
+        puck.y = puck.r * 2;
         puck.speedY = puck.speedY * -1;
       }
 
@@ -118,7 +148,7 @@ io.on('connection', function(socket){
       for (const player of players) {
         const dist = Math.sqrt(Math.pow((puck.x - player.x), 2) + Math.pow((puck.y - player.y), 2));
 
-        if (dist < puck.r + 25) {
+        if (dist < puck.r + 35) {
           console.log('COLLISION');
 
           // Tallenna uudet nopeudet muuttujiin
@@ -148,8 +178,6 @@ io.on('connection', function(socket){
         }
 
       }
-
-      // Determine if goal
     }
     socket.emit('update', {
         players: players,
@@ -164,7 +192,7 @@ io.on('connection', function(socket){
 
 // Kun client pyytää get metodilla "/" urlia lähetä sille index.html
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+  res.render('index');
 });
 
 // Aseta server kuuntelemaan porttia 3000.
