@@ -3,17 +3,12 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const path = require('path');
-const index = require('./routes/index');
-const ejs = require('ejs');
 
 const port = 3000;
 
 // View Engine Setup for EJS
-app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', index);
 
 /* GAME SETTINGS */
 let gameOver = false;
@@ -116,6 +111,21 @@ io.on('connection', function(socket){
       puck.x += puck.speedX;
       puck.y += puck.speedY;
 
+      if (puck.speedY > 0) {
+        puck.speedY = puck.speedY - (puck.speedY / 50);
+      } else if (puck.speedY < 0) {
+        puck.speedY = puck.speedY + (puck.speedY / 50);
+      }
+
+      if (puck.speedX > 0) {
+        puck.speedX = puck.speedX - (puck.speedX / 50);
+      } else if (puck.speedX < 0) {
+        puck.speedX = puck.speedX + (puck.speedX / 50);
+      }
+
+      console.log(puck.speedX);
+      console.log(puck.speedY);
+
       // Katso jos maali
       if (puck.x <= puck.r && (puck.y >= 350 && puck.y <= 550)) {
         // Maali pelaaja 1:lle
@@ -193,6 +203,13 @@ io.on('connection', function(socket){
 // Kun client pyytää get metodilla "/" urlia lähetä sille index.html
 app.get('/', function(req, res){
   res.render('index');
+});
+
+app.get('/airhockey', function(req, res) {
+  console.log(req.url);
+  res.render('airhockey', {
+    page: req.url,
+  });
 });
 
 // Aseta server kuuntelemaan porttia 3000.
