@@ -1,5 +1,31 @@
 $(function () {
 
+  const socket = io();
+
+  socket.emit('testi', 'message');
+
+  socket.emit('lobby_enter', {
+    lobby: 'airhockey',
+  });
+
+  socket.on('airhockey_lobby_update', (data) => {
+    const sockets = data.sockets;
+    const games = data.games;
+
+    const playersElement = document.getElementById('players');
+    playersElement.innerHTML = '';
+    const gamesElement = document.getElementById('games');
+    gamesElement.innerHTML = '';
+
+    for (const key in sockets) {
+      const data = sockets[key];
+      const el = document.createElement('li');
+      el.innerHTML = data.id;
+      playersElement.appendChild(el);
+    }
+
+  });
+
   // Näiden muuttaminen vaatisi myös server puolen muutoksia. Tai sitten kaikki nää pitää saada serveriltä jotta serverillä voidaan laskea esim pelaajan rajoittaminen keskiviivaan
   const canvasWidth = 1800;
   const canvasHeight = 900;
@@ -64,20 +90,18 @@ $(function () {
 
   /* FUNCTIONS END */
 
-  const socket = io();
-
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext("2d");
 
   canvas.addEventListener('mousemove', (event) => {
-    socket.emit('move', [event.clientX, event.clientY]);
+    socket.emit('airhockey_move', [event.clientX, event.clientY]);
   });
 
   // Draw lines
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   drawLinesToField();
 
-  socket.on('update', (data) => {
+  socket.on('airhockey_update', (data) => {
 
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     drawLinesToField();

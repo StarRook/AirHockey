@@ -1,27 +1,32 @@
 <% include partials/header %>
 
-<div id="game">
+<div style="display:none" id="game">
     <canvas id="canvas" style="border: 1px solid black;" width="1800" height="900"></canvas>
     <audio style="display: none;"><source src="" type="audio/mpeg"></audio>
 </div>
-<div id="lobby">
-    <h1>Welcome to AirHockey</h1>
-    <h3>Lobby</h3>
-    <div style="width: 25%">
-        <h4>Paikalla olevat pelaajat</h4>
-        <ul id="players">
+<div style="min-height: 75vh" id="lobby" class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1>Ilmakiekko</h1>
+            <h3>Aula</h3>
+        </div>
+        <div class="col-8">
+            <h4>Paikalla olevat pelaajat</h4>
+            <ul id="players">
 
-        </ul>
-    </div>
-    <div style="width: 75%">
-        <h4>Avoimet pelit</h4>
-        <ul id="games">
+            </ul>
+        </div>
+        <div class="col-4">
+            <h4>Avoimet pelit</h4>
+            <ul id="games">
 
-        </ul>
+            </ul>
+            <button class="btn btn-outline-success">Luo peli</button>
+        </div>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="js/game.js"></script>
 
