@@ -8,6 +8,20 @@ $(document).ready(function() {
     loggedindiv.css('display', 'block');
     loggedoutdiv.css('display', 'none');
     $('#welcomemessage').text('Hei, ' + localStorage.getItem('username') + '!');
+    $.ajax({
+      url: 'http://localhost:3000/validateSession',
+      type: 'post',
+      success: function(response, textStatus, jqXHR){
+        console.log('Valid session');
+        // User session is still valid no need to do anything
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        // User session is not valid
+        console.log('Invalid session');
+        localStorage.removeItem('username');
+        window.location.replace('http://localhost:3000/expired');
+      },
+    });
   } else {
     console.log('User is logged out');
     loggedindiv.css('display', 'none');
@@ -67,6 +81,10 @@ $(document).ready(function() {
         loggedoutdiv.css('display', 'none');
         $('#closeLoginModal').click();
         $('#welcomemessage').text('Hei, ' + localStorage.getItem('username') + '!');
+        console.log('Login Successful');
+        if (window.location.href.includes('expired')) {
+          window.location.replace('http://localhost:3000');
+        }
       },
       error: function(jqXHR, textStatus, errorThrown) {
         console.error(

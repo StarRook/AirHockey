@@ -36,10 +36,28 @@ app.get('/', function(req, res){
   });
 });
 
+app.get('/games', (req, res) => {
+  res.render('games', {
+    page: req.url,
+  });
+});
+
+app.get('/tanks', function(req, res) {
+  res.render('tanks', {
+    page: req.url,
+  });
+});
+
 app.get('/airhockey', function(req, res) {
   res.render('airhockey', {
     page: req.url,
   });
+});
+
+app.get('/expired', function(req, res) {
+  res.render('expired', {
+    page: 'expired',
+  })
 });
 
 app.post('/register', function(req, res) {
@@ -56,6 +74,16 @@ app.post('/register', function(req, res) {
         }
       });
     });
+});
+
+app.post('/validateSession', verifyToken, (req, res) => {
+  try {
+    jwt.verify(req.token, process.env.JWT_SECRET);
+    res.status(200).send('Valid');
+  } catch (e) {
+    console.log(e);
+    res.status(403).send('Expired');
+  }
 });
 
 app.post('/login', function(req, res) {
@@ -78,7 +106,7 @@ app.post('/login', function(req, res) {
           const payload = {
             id: result[0].id,
             username: result[0].username,
-            expiresIn: '12h'
+            exp: Math.floor(Date.now() / 1000) + (60 * 60) // Token expires in 1 hour
           };
 
           jwt.sign(payload, process.env.JWT_SECRET, {algorithm: 'HS256'}, (jwtErr, token) => {
@@ -101,15 +129,17 @@ app.post('/login', function(req, res) {
 
 });
 
-const verifyToken = (req, res, next) => {
+function verifyToken(req, res, next) {
   const cookie = req.cookies.token;
   if (typeof cookie !== "undefined") {
     req.token = cookie;
     next();
   } else {
-    res.sendStatus(403);
+    res.render('expired', {
+      page: 'expired',
+    });
   }
-};
+}
 
 app.post('/logout', verifyToken, (req, res) => {
   try {

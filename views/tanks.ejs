@@ -1,13 +1,14 @@
 <% include partials/header.ejs %>
 
-<div style="display:none" id="game">
-    <canvas id="canvas" style="border: 1px solid black;" width="1800" height="900"></canvas>
-    <audio style="display: none;"><source src="" type="audio/mpeg"></audio>
+<div style="display:block" id="game">
+    <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 30px">
+        <canvas id="canvas" style="border: 1px solid black;" width="1300" height="700"></canvas>
+    </div>
 </div>
 <div style="min-height: 75vh" id="lobby" class="container">
     <div class="row">
         <div class="col-12">
-            <h1>Ilmakiekko</h1>
+            <h1>Tankkipeli</h1>
             <h3>Aula</h3>
         </div>
         <div class="col-8">

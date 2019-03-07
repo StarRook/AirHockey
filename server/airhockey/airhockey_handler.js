@@ -1,95 +1,138 @@
-const AIRHOCKEY_LOBBY = {
-  sockets: {},
-  games: {},
-};
+const AIRHOCKEY_LOBBY = {};
 const AIRHOCKEY_GAMES = {};
 
 module.exports = {
 
+  joinGame: function(io, socket, data) {
+    AIRHOCKEY_GAMES[data.gameId].players.push({
+      name: data.username,
+      id: socket.id,
+      x: 0,
+      y: 0,
+      no: 2,
+      lastPosX: 0,
+      lastPosY: 0,
+      velX: 0,
+      velY: 0,
+      mass: 20,
+      radius: 35,
+    });
+    this.deleteFromLobby(socket.id);
+    io.sockets.emit('airhockey_lobby_update', this.getLobby());
+    AIRHOCKEY_GAMES[data.gameId].gameStarted = true;
+  },
+
+  createNewGame: function(io, socket, data) {
+    AIRHOCKEY_GAMES[socket.id] = {
+      gameName: data.username + "'s game",
+      players: [{
+        name: data.username,
+        id: socket.id,
+        x: 0,
+        y: 0,
+        no: 1,
+        lastPosX: 0,
+        lastPosY: 0,
+        velX: 0,
+        velY: 0,
+        mass: 20,
+        radius: 35,
+      }],
+      gameStarted: false,
+      gameOver: false,
+      score: {
+        player1: 0,
+        player2: 0,
+      },
+      puck: {
+        x: 900,
+        y: 450,
+        r: 12,
+        color: '#000000',
+        speedX: Math.round(Math.random() * 10 + 1),
+        speedY: Math.round(Math.random() * 10 + 1),
+        mass: 10,
+        maxSpeed: 100,
+      }
+    };
+    this.deleteFromLobby(socket.id);
+    io.sockets.emit('airhockey_lobby_update', this.getLobby());
+  },
+
   addNewPlayerToLobby: function(player) {
-    AIRHOCKEY_LOBBY.sockets[player.id] = {
+    AIRHOCKEY_LOBBY[player.id] = {
       id: player.id,
+      username: player.username,
     };
   },
 
   getLobby: function() {
-    return AIRHOCKEY_LOBBY;
+    return {lobby: AIRHOCKEY_LOBBY, games: AIRHOCKEY_GAMES};
   },
 
   deleteFromLobby: function(socket_id) {
-    delete AIRHOCKEY_LOBBY.sockets[socket_id];
+    delete AIRHOCKEY_LOBBY[socket_id];
   },
 
-};
+  movePlayer: function(io, socket, data) {
 
-/*
-const lobby = {
-  sockets: [],
-  games: [],
-};
+    const coords = data;
 
-const games = [];
+    for (const key in AIRHOCKEY_GAMES) {
+      const game = AIRHOCKEY_GAMES[key];
+      for (const player of game.players) {
+        if (player.id === socket.id) {
+          // Tallenna lastPosX ja lastPosY
+          player.lastPosX = player.x;
+          player.lastPosY = player.y;
 
-module.exports = {
-
-  airhockey_handler: function() {
-
-    io.on('connection', function(socket) {
-
-      lobby.sockets.push(socket);
-      socket.emit('airhockey_lobby_update', lobby);
-
-      socket.on('disconnect', () => {
-        for (let i = 0; i < lobby.sockets.length; i++) {
-          if (lobby.sockets[i].id === socket.id) {
-            lobby.sockets.splice(i, 1);
-            socket.emit(lobby);
-          }
-        }
-      });
-
-      socket.on('airhockey_move', (game_id, coords) => {
-        for (const game of games) {
-          if (game.id === game_id) {
-            for (const player of game.players) {
-              if (player.id === socket.id) {
-                // Tallenna lastPosX ja lastPosY
-                player.lastPosX = player.x;
-                player.lastPosY = player.y;
-
-                // Jos pelaaja 1 niin rajoita X - suunnan liikkuminen 935px:iin.
-                if (player.no === 1) {
-                  if (coords[0] < 935) {
-                    player.x = 935;
-                  } else {
-                    player.x = coords[0];
-                  }
-                  // Jos taas pelaaja 2 niin rajoita X - suunnan liikkuminen 865px:iin
-                } else if (player.no === 2) {
-                  if (coords[0] > 865) {
-                    player.x = 865;
-                  } else {
-                    player.x = coords[0];
-                  }
-                }
-                // Aseta uusi y-koordinaatti pelaajalle
-                player.y = coords[1];
-
-                // Laske velX ja velY
-                player.velX = player.x - player.lastPosX;
-                player.velY = player.y - player.lastPosY;
-              }
+          // Jos pelaaja 1 niin rajoita X - suunnan liikkuminen 935px:iin.
+          if (player.no === 1) {
+            if (coords[0] < 935) {
+              player.x = 935;
+            } else {
+              player.x = coords[0];
+            }
+            // Jos taas pelaaja 2 niin rajoita X - suunnan liikkuminen 865px:iin
+          } else if (player.no === 2) {
+            if (coords[0] > 865) {
+              player.x = 865;
+            } else {
+              player.x = coords[0];
             }
           }
+          // Aseta uusi y-koordinaatti pelaajalle
+          player.y = coords[1];
+
+          // Laske velX ja velY
+          player.velX = player.x - player.lastPosX;
+          player.velY = player.y - player.lastPosY;
         }
-      });
-
-    });
+      }
+    }
   },
-  airhockey_game_updater: function(game) {
 
-    // Dumb gameloop joka päivittää about 60 kertaa sekunissa. Tähän kaikki pelin logiikka.
+  deleteFromGames: function(socket_id) {
+    for (const key in AIRHOCKEY_GAMES) {
+      const game = AIRHOCKEY_GAMES[key];
+      for (let i = 0; i < game.players.length; i++) {
+        if (game.players[i].id === socket_id) {
+          game.players.splice(i, 1);
+          if (game.players.length < 1) {
+            console.log('Game empty deleting it');
+            delete AIRHOCKEY_GAMES[key];
+            break;
+          }
+        }
+      }
+    }
+  },
 
+  updateGames: function(io) {
+    for (const key in AIRHOCKEY_GAMES) {
+      const game = AIRHOCKEY_GAMES[key];
+
+      if (game.gameStarted) {
         const puck = game.puck;
         const score = game.score;
         const players = game.players;
@@ -166,79 +209,15 @@ module.exports = {
               puck.speedY = newSpeedY;
             }
 
-            console.log('Puck speed x: ' + puck.speedX);
-            console.log('Puck speed y: ' + puck.speedY);
-
           }
 
         }
 
-  },
-
-  join_airhockey_game: function(socket_id, id) {
-    for (const game of lobby.games) {
-      if (game.id === id && game.players.length < 2) {
-
-        const player = {
-          id: socket_id,
-          x: 0,
-          y: 0,
-          no: 2,
-          lastPosX: 0,
-          lastPosY: 0,
-          velX: 0,
-          velY: 0,
-          mass: 20,
-        };
-
-        game.players.push(player);
-        games.push(game);
+        // Update sockets
+        io.sockets.emit('airhockey_update', AIRHOCKEY_GAMES[key]);
       }
+
     }
-  },
+  }
 
-  create_airhockey_game: function(socket_id) {
-    let puck = {
-      x: 900,
-      y: 450,
-      r: 12,
-      color: '#000000',
-      speedX: Math.round(Math.random() * 10 + 1),
-      speedY: Math.round(Math.random() * 10 + 1),
-      mass: 10,
-      maxSpeed: 100,
-    };
-
-    let score = {
-      player1: 0,
-      player2: 0,
-    };
-
-    const player = {
-      id: socket_id,
-      x: 0,
-      y: 0,
-      no: 1,
-      lastPosX: 0,
-      lastPosY: 0,
-      velX: 0,
-      velY: 0,
-      mass: 20,
-    };
-
-    let players = [player];
-
-    const game = {
-      id: 'asdasdasd',
-      puck: puck,
-      score: score,
-      players: players,
-      started: false,
-    };
-
-    lobby.games.push(game);
-
-    return game.id;
-
-  },
-}; */
+};

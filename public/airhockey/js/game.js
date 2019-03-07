@@ -1,15 +1,38 @@
 $(function () {
 
+  console.log('Airhockey js file');
+
   const socket = io();
 
-  socket.emit('testi', 'message');
+  const gameId = '';
 
-  socket.emit('lobby_enter', {
-    lobby: 'airhockey',
+  $("#createGame").on("click", (event) => {
+    socket.emit('airhockey_new_game', {
+      username: localStorage.getItem('username')
+    });
+    $("#lobby").css('display', 'none');
+    $("#game").css('display', 'block');
+  });
+
+  $(document).on("click", ".joinGame", function(event) {
+    socket.emit('airhockey_join_game', {
+      gameId: $(this).data('game'),
+      username: localStorage.getItem('username')
+    });
+    $("#lobby").css('display', 'none');
+    $("#game").css('display', 'block');
+  });
+
+  socket.on('connect', function(){
+    socket.emit('lobby_enter', {
+      lobby: 'airhockey',
+      username: localStorage.getItem('username'),
+    });
   });
 
   socket.on('airhockey_lobby_update', (data) => {
-    const sockets = data.sockets;
+
+    const sockets = data.lobby;
     const games = data.games;
 
     const playersElement = document.getElementById('players');
@@ -20,8 +43,17 @@ $(function () {
     for (const key in sockets) {
       const data = sockets[key];
       const el = document.createElement('li');
-      el.innerHTML = data.id;
+      el.innerHTML = data.username;
       playersElement.appendChild(el);
+    }
+
+    for (const key in games) {
+      const data = games[key];
+      if (data.players.length < 2) {
+        const el = document.createElement('li');
+        el.innerHTML = `<span>${data.gameName}</span><button style="margin-left: 10px" data-game="${key}" class="btn btn-outline-success joinGame">Liity</button>`;
+        gamesElement.appendChild(el);
+      }
     }
 
   });
@@ -29,7 +61,6 @@ $(function () {
   // Näiden muuttaminen vaatisi myös server puolen muutoksia. Tai sitten kaikki nää pitää saada serveriltä jotta serverillä voidaan laskea esim pelaajan rajoittaminen keskiviivaan
   const canvasWidth = 1800;
   const canvasHeight = 900;
-  const playerRadius = 35;
 
   /* FUNCTIONS START */
 
@@ -103,25 +134,27 @@ $(function () {
 
   socket.on('airhockey_update', (data) => {
 
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-    drawLinesToField();
+    if (data.players[0].id === socket.id || data.players[1].id === socket.id) {
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      drawLinesToField();
 
-    for (const player of data.players) {
+      for (const player of data.players) {
 
-      let fillStyle = '#0c2984';
+        let fillStyle = '#0c2984';
 
-      if (player.no === 1) {
-        fillStyle = '#ad222d';
+        if (player.no === 1) {
+          fillStyle = '#ad222d';
+        }
+
+        drawArc(fillStyle, player.x, player.y, player.radius, true);
       }
 
-      drawArc(fillStyle, player.x, player.y, playerRadius, true);
+      const puck = data.puck;
+
+      drawArc(puck.color, puck.x, puck.y, puck.r, true);
+
+      drawScore(data.score.player1, data.score.player2);
     }
-
-    const puck = data.puck;
-
-    drawArc(puck.color, puck.x, puck.y, puck.r, true);
-
-    drawScore(data.score.player1, data.score.player2);
 
   });
 });
