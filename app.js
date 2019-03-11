@@ -124,17 +124,17 @@ io.on('connection', function(socket){
         if (puck.speedY > 0) {
           puck.speedY = puck.speedY - (puck.speedY / 50);
         } else if (puck.speedY < 0) {
-          puck.speedY = puck.speedY + (puck.speedY / 50);
+          puck.speedY = puck.speedY + (-puck.speedY / 50);
         }
 
         if (puck.speedX > 0) {
           puck.speedX = puck.speedX - (puck.speedX / 50);
         } else if (puck.speedX < 0) {
-          puck.speedX = puck.speedX + (puck.speedX / 50);
+          puck.speedX = puck.speedX + (-puck.speedX / 50);
         }
 
-        // console.log(puck.speedX);
-        // console.log(puck.speedY);
+        //console.log(puck.speedX);
+        //console.log(puck.speedY);
 
         // Katso jos maali
         if (puck.x <= puck.r && (puck.y >= 350 && puck.y <= 550)) {
