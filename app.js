@@ -3,8 +3,11 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const path = require('path');
+const cors = require('cors');
 
 const port = 3000;
+
+app.use(cors());
 
 // View Engine Setup for EJS
 app.set('view engine', 'ejs');
