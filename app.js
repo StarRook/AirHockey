@@ -7,7 +7,7 @@ const cors = require('cors');
 
 const port = 3000;
 
-app.use(cors());
+// app.use(cors());
 
 // View Engine Setup for EJS
 app.set('view engine', 'ejs');
