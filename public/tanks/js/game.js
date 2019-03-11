@@ -10,21 +10,24 @@ $(document).ready(function(){
   const width = canvas.scrollWidth;
   const height = canvas.scrollHeight;
 
+  const mousePos = {x: 0, y: 0};
   const PROJECTILES = [];
   const CLOUDS = [];
+  const HOLES = [];
   const GRAVITY = 0.4;
   const TANKS = [{
     img: tankImage,
     pipeImg: pipeImage,
     x: 200,
     y: 50,
-    speedX: 0,
     speedY: 0,
   }];
   const wind = {
-    speed: -2,
+    speed: -0.05,
     loop: 0,
   };
+
+
 
   const SKYPATH = [[-10, -10], [width + 10, -10], [width + 10, 500], [-10, 500]];
   let sky = null;
@@ -45,16 +48,48 @@ $(document).ready(function(){
     }
   });
 
+  document.addEventListener('mousemove', (ev) => {
+    mousePos.x = ev.layerX;
+    mousePos.y = ev.layerY;
+  });
+
   document.addEventListener('mousedown', (ev) => {
     if (ev.which === 1) {
+
+      console.log(ev);
+
+      const mouseX = ev.layerX;
+      const mouseY = ev.layerY;
+
+      // Calculate the x and y diff to tank
+      const diffX = mouseX - TANKS[0].x;
+      const diffY = mouseY - TANKS[0].y;
+
+      console.log(diffX / 10, diffY / 10);
+
       PROJECTILES.push({
         x: TANKS[0].x + 21,
         y: TANKS[0].y - 10,
-        vel: 4,
-        force: 50,
+        forceX: constrain(12, -12, diffX / 10),
+        forceY: constrain(12, -12, (diffY / 10) * -1),
+        blastRadius: 30,
+        r: 2,
       });
     }
   });
+
+  function constrain(maxValue, minValue, curValue) {
+    if (curValue <= maxValue && curValue >= minValue) {
+      return curValue;
+    } else {
+      if (curValue > maxValue) {
+        curValue = maxValue;
+      } else {
+        curValue = minValue;
+      }
+      return curValue;
+    }
+  }
 
   function loop() {
     draw();
@@ -82,11 +117,25 @@ $(document).ready(function(){
     ctx.strokeStyle = "#1c9412";
     ctx.fill(sky);
 
+    // Draw holes
+    for (const hole of HOLES) {
+      ctx.beginPath();
+      ctx.arc(hole.x, hole.y, hole.r, 0, 2 * Math.PI);
+      ctx.fillStyle = '#3baae7';
+      ctx.lineWidth = '1';
+      ctx.strokeStyle = '#3baae7';
+      ctx.fill();
+      ctx.stroke();
+    }
+
     // Draw projectiles
     for (const projectile of PROJECTILES) {
       ctx.beginPath();
-      ctx.arc(projectile.x, projectile.y, 2, 0, 2 * Math.PI);
+      ctx.arc(projectile.x, projectile.y, projectile.r, 0, 2 * Math.PI);
+      ctx.lineWidth = "1";
+      ctx.strokeStyle = "#000";
       ctx.fillStyle = '#000';
+      ctx.fill();
       ctx.stroke();
     }
 
@@ -111,6 +160,12 @@ $(document).ready(function(){
       ctx.fill();
       ctx.stroke();
     }
+
+    // Draw guidance line
+    ctx.beginPath();
+    ctx.moveTo(TANKS[0].x + 22, TANKS[0].y);
+    ctx.lineTo(mousePos.x, mousePos.y);
+    ctx.stroke();
   }
 
   function update() {
@@ -125,17 +180,29 @@ $(document).ready(function(){
     }
     for (let i = 0; i < PROJECTILES.length; i++) {
       const projectile = PROJECTILES[i];
-      projectile.x = projectile.x + projectile.vel;
-      if (projectile.force > 0) {
-        projectile.force = projectile.force - GRAVITY;
-        projectile.y = projectile.y - (projectile.force / 10);
-      } else {
-        projectile.force = projectile.force - GRAVITY;
-        projectile.y = projectile.y + (-projectile.force / 10)
+      // Update projectile location
+      projectile.x = projectile.x + projectile.forceX;
+      projectile.y = projectile.y - projectile.forceY;
+
+      let notInsideHole = true;
+
+      for (const hole of HOLES) {
+        if (Math.sqrt((hole.x-projectile.x)*(hole.x-projectile.x) + (hole.y-projectile.y)*(hole.y-projectile.y)) < hole.r) {
+          notInsideHole = false;
+        }
       }
-      if (projectile.x < 0 || projectile.x > width) {
+      if (!ctx.isPointInPath(sky, projectile.x, projectile.y) && notInsideHole) {
+        HOLES.push({
+          x: projectile.x,
+          y: projectile.y,
+          r: projectile.blastRadius,
+        });
         PROJECTILES.splice(i, 1);
       }
+
+      // Calculate new projectile forces
+      projectile.forceX = projectile.forceX + wind.speed;
+      projectile.forceY = projectile.forceY - GRAVITY;
     }
   }
 
@@ -157,13 +224,10 @@ $(document).ready(function(){
       nextCoords.push((Math.floor(Math.random() * 45) + 10) + data[data.length - 1][0]);
       // Get next Y
       if (data.length % 2 === 0) {
-        console.log('Even', data[data.length - 1][1]);
         nextCoords.push(data[data.length - 1][1] + Math.floor(Math.random() * 25) + 10);
       } else {
-        console.log('Odd', data[data.length - 1][1]);
         nextCoords.push(data[data.length - 1][1] - (Math.floor(Math.random() * 25) + 10));
       }
-      console.log(nextCoords);
       // Push to data and get next coords if length < 7
       data.push(nextCoords);
       if (data.length < 7) {
